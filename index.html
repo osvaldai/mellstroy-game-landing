@@ -227,6 +227,7 @@
     };
 
     const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+    const TRONGRID_API_KEY = 'b77f713f-ef50-4d28-892b-a8bb088e3782';
     const GOAL = 69000;
 
     function detectLang(){
@@ -363,7 +364,10 @@
       const ok = await loadTronWeb();
       if(!ok){ byId('raised').textContent = '— (TronWeb недоступний)'; return; }
       try{
-        const tronWeb = new window.TronWeb({ fullHost: 'https://api.trongrid.io' });
+        const tronWeb = new window.TronWeb({
+          fullHost: 'https://api.trongrid.io',
+          headers: { 'TRON-PRO-API-KEY': TRONGRID_API_KEY }
+        });
         const usdt = await tronWeb.contract().at(USDT_CONTRACT);
         const [rawBal, dec] = await Promise.all([
           usdt.balanceOf(addr).call(),
