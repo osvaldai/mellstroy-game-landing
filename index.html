@@ -304,19 +304,78 @@
     byId('shareBtn').addEventListener('click', doShare);
     byId('shareBtn2').addEventListener('click', doShare);
 
+    function enableQrDownload(canvas){
+      const btn = byId('downloadQR');
+      if(btn.dataset.ready) return;
+      btn.dataset.ready = '1';
+      btn.addEventListener('click', ()=>{
+        const link = document.createElement('a');
+        link.download = 'mellstroy_wallet_qr.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+
     (async function(){
-      try{
-        await new Promise((resolve, reject)=>{
-          const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js'; s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
-        });
-        if(window.QRCode){
-          const canvas = byId('qrCanvas');
-          window.QRCode.toCanvas(canvas, addr, {width:180, margin:1}, function (error) { if (error) console.error(error); });
-          byId('downloadQR').addEventListener('click', ()=>{
-            const link = document.createElement('a'); link.download = 'mellstroy_wallet_qr.png'; link.href = canvas.toDataURL(); link.click();
+      const canvas = byId('qrCanvas');
+      const qrLibs = [
+        'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js'
+      ];
+      let qrLoaded = false;
+
+      for(const src of qrLibs){
+        try{
+          await new Promise((resolve, reject)=>{
+            const s=document.createElement('script');
+            s.src=src;
+            s.async=true;
+            s.onload=resolve;
+            s.onerror=reject;
+            document.head.appendChild(s);
           });
-        }
-      }catch(e){ console.warn('QR lib failed'); }
+          if(window.QRCode && typeof window.QRCode.toCanvas === 'function'){
+            qrLoaded = true;
+            break;
+          }
+        }catch(err){ console.warn('QR script failed to load', src); }
+      }
+
+      if(qrLoaded){
+        window.QRCode.toCanvas(canvas, addr, {width:180, margin:1}, function (error) {
+          if(error){
+            console.error(error);
+          } else {
+            enableQrDownload(canvas);
+          }
+        });
+        return;
+      }
+
+      // Fallback: fetch a ready QR image and draw it on canvas.
+      try{
+        const size = 180;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(addr)}`;
+        const response = await fetch(qrUrl, { mode: 'cors' });
+        if(!response.ok) throw new Error('QR API response not OK');
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        const ctx = canvas.getContext('2d');
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        ctx.drawImage(bitmap, 0, 0);
+        enableQrDownload(canvas);
+      }catch(err){
+        console.error('QR generation failed', err);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#0e1118';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f87171';
+        ctx.font = '14px "Space Grotesk", system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('QR недоступний', canvas.width/2, canvas.height/2);
+      }
     })();
 
     async function loadTronWeb(){
