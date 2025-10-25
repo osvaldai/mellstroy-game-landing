@@ -228,6 +228,8 @@
 
     const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
     const TRONGRID_API_KEY = 'b77f713f-ef50-4d28-892b-a8bb088e3782';
+    const TRONGRID_HOST = 'https://api.trongrid.io';
+    const TRONSCAN_HOST = 'https://apilist.tronscanapi.com';
     const GOAL = 69000;
 
     function detectLang(){
@@ -405,6 +407,51 @@
       return f ? `${i}.${f}` : i;
     }
 
+    function extractTokenAmount(entry, fallbackDecimals = 6){
+      if(!entry) return null;
+      const decimalCandidates = [
+        entry.tokenDecimal,
+        entry.decimals,
+        entry.decimal,
+        entry.tokenPrecision,
+        entry.precision
+      ];
+      const decimals = decimalCandidates
+        .map(value => Number.parseInt(value, 10))
+        .find(Number.isFinite);
+      const resolvedDecimals = Number.isFinite(decimals) ? decimals : fallbackDecimals;
+
+      let raw = entry.balance ?? entry.amount ?? entry.tokenBalance ?? entry.tokenAmount ?? entry.value ?? entry.tokenValue ?? entry.quantity ?? entry.tokenQuantity ?? null;
+      if(raw == null) return null;
+
+      if(typeof raw === 'string'){
+        const cleaned = raw.replace(/,/g, '').trim();
+        if(cleaned === '') return null;
+        if(/^\d+$/.test(cleaned)){
+          raw = cleaned;
+        }else if(/^\d*\.?\d+$/.test(cleaned)){
+          const [whole, frac = ''] = cleaned.split('.');
+          const fracAdj = frac.padEnd(resolvedDecimals, '0').slice(0, resolvedDecimals);
+          const big = `${whole || '0'}${fracAdj}`.replace(/^0+(?=\d)/, '') || '0';
+          try{
+            return formatUnits(big, resolvedDecimals);
+          }catch(err){
+            return null;
+          }
+        }else{
+          const num = Number.parseFloat(cleaned);
+          if(Number.isFinite(num)) return num.toString();
+          return null;
+        }
+      }
+
+      try{
+        return formatUnits(raw, resolvedDecimals);
+      }catch(err){
+        return null;
+      }
+    }
+
     async function updateUI(amountStr){
       const amount = parseFloat(amountStr);
       const pct = Math.max(0, Math.min(100, (amount / GOAL) * 100));
@@ -414,18 +461,128 @@
       byId('updated').textContent = new Date().toLocaleString(LANG==='ru'?'ru-RU':LANG==='en'?'en-US':'uk-UA');
     }
 
+    async function fetchTronBalance(){
+      const defaultHeaders = {
+        'TRON-PRO-API-KEY': TRONGRID_API_KEY,
+        'Accept': 'application/json'
+      };
+      let lastErr = null;
+
+      const attemptParsers = [
+        {
+          url: `${TRONSCAN_HOST}/api/account/tokens?address=${addr}&start=0&limit=100&hidden=0&show=0&sortType=totalValue`,
+          headers: defaultHeaders,
+          parse(json){
+            const list = Array.isArray(json?.data) ? json.data : Array.isArray(json?.tokens) ? json.tokens : [];
+            for(const token of list){
+              if(!token) continue;
+              const contract = token.tokenId || token.contract_address || token.contractAddress || token.address || token.contract;
+              if(contract && contract.toLowerCase() === USDT_CONTRACT.toLowerCase()){
+                const amount = extractTokenAmount(token, 6);
+                if(amount != null) return amount;
+              }
+            }
+            throw new Error('USDT balance not found in TronScan tokens');
+          }
+        },
+        {
+          url: `${TRONSCAN_HOST}/api/account?address=${addr}`,
+          headers: defaultHeaders,
+          parse(json){
+            const balances = json?.data?.trc20TokenBalances || json?.trc20token_balances || json?.trc20TokenBalances || json?.trc20Balances;
+            const list = Array.isArray(balances) ? balances : [];
+            for(const token of list){
+              if(!token) continue;
+              const contract = token.tokenId || token.contract_address || token.contractAddress || token.address || token.contract;
+              if(contract && contract.toLowerCase() === USDT_CONTRACT.toLowerCase()){
+                const amount = extractTokenAmount(token, 6);
+                if(amount != null) return amount;
+              }
+            }
+            throw new Error('USDT balance not in TronScan account');
+          }
+        },
+        {
+          url: `${TRONGRID_HOST}/v1/contracts/${USDT_CONTRACT}/accounts/${addr}`,
+          headers: defaultHeaders,
+          parse(json){
+            const entry = Array.isArray(json?.data) ? json.data[0] : null;
+            if(!entry){
+              throw new Error('No contract data');
+            }
+            const raw = entry.balance ?? entry.amount ?? entry.value;
+            if(raw == null){
+              throw new Error('Contract balance missing');
+            }
+            const decimals = Number.parseInt(entry.decimals, 10);
+            return formatUnits(raw, Number.isFinite(decimals) ? decimals : 6);
+          }
+        },
+        {
+          url: `${TRONGRID_HOST}/v1/accounts/${addr}`,
+          headers: defaultHeaders,
+          parse(json){
+            const entry = Array.isArray(json?.data) ? json.data[0] : null;
+            const trc20 = Array.isArray(entry?.trc20) ? entry.trc20 : [];
+            for(const token of trc20){
+              if(!token) continue;
+              let raw = null;
+              if(Object.prototype.hasOwnProperty.call(token, USDT_CONTRACT)){
+                raw = token[USDT_CONTRACT];
+              }else if(token?.contract_address === USDT_CONTRACT || token?.tokenId === USDT_CONTRACT){
+                raw = token.balance ?? token.value ?? token.amount ?? null;
+              }
+              if(raw != null){
+                const decimals = Number.parseInt(token.decimals, 10);
+                return formatUnits(raw, Number.isFinite(decimals) ? decimals : 6);
+              }
+            }
+            throw new Error('USDT balance not found in account data');
+          }
+        }
+      ];
+
+      for(const {url, parse, headers} of attemptParsers){
+        try{
+          const resp = await fetch(url, { headers: headers || defaultHeaders, mode: 'cors' });
+          if(!resp.ok){
+            throw new Error(`HTTP ${resp.status}`);
+          }
+          const json = await resp.json();
+          const amount = parse(json);
+          if(amount == null){
+            throw new Error('Empty amount response');
+          }
+          return amount;
+        }catch(err){
+          lastErr = err;
+          console.warn('Balance REST read failed', url, err);
+        }
+      }
+
+      throw lastErr || new Error('Balance unavailable');
+    }
+
     async function readBalance(){
       if(!/^T[a-zA-Z0-9]{25,34}$/.test(addr)){
         byId('raised').textContent = '— (add TRON address)';
         byId('progress').textContent = '—';
         return;
       }
+      try{
+        const amountStr = await fetchTronBalance();
+        await updateUI(amountStr);
+        return;
+      }catch(err){
+        console.warn('TronGrid REST balance failed, trying TronWeb', err);
+      }
+
       const ok = await loadTronWeb();
-      if(!ok){ byId('raised').textContent = '— (TronWeb недоступний)'; return; }
+      if(!ok){ byId('raised').textContent = '— (Tron API недоступний)'; return; }
       try{
         const tronWeb = new window.TronWeb({
-          fullHost: 'https://api.trongrid.io',
-          headers: { 'TRON-PRO-API-KEY': "b77f713f-ef50-4d28-892b-a8bb088e3782" }
+          fullHost: TRONGRID_HOST,
+          headers: { 'TRON-PRO-API-KEY': TRONGRID_API_KEY }
         });
         const usdt = await tronWeb.contract().at(USDT_CONTRACT);
         const [rawBal, dec] = await Promise.all([
