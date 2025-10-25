@@ -20,7 +20,7 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0; font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; color:var(--fg); background:radial-gradient(1200px 800px at 10% -10%, rgba(124,58,237,.25), transparent), radial-gradient(1000px 600px at 110% 10%, rgba(34,211,238,.18), transparent), linear-gradient(180deg, #0b0b10, #0b0b10);}    
-    .wrap{max-width:980px; margin:0 auto; padding:24px}
+    .wrap{max-width:980px; margin:0 auto; padding:24px 24px 48px}
     header{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 0}
     .logo{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
     .badge{display:inline-flex; align-items:center; gap:8px; background:rgba(124,58,237,.12); color:#cbb6ff; border:1px solid rgba(124,58,237,.35); padding:6px 10px; border-radius:999px; font-size:12px;}
@@ -67,6 +67,45 @@
     /* Attention strip */
     .attention{margin:8px 0 16px; border:1px dashed rgba(255,255,255,.18); border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px}
     .attention strong{background:linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+    @media (max-width: 920px){
+      .wrap{padding:20px 20px 40px}
+      header{flex-direction:column; align-items:flex-start; gap:10px}
+      .lang{width:100%; justify-content:space-between}
+      .card{padding:18px}
+      .attention{flex-direction:column; align-items:flex-start; gap:14px}
+      .attention .btn{width:100%; text-align:center}
+      .goal{flex-direction:column; align-items:flex-start; gap:8px}
+      .goal strong{font-size:20px}
+    }
+
+    @media (max-width: 680px){
+      .wrap{padding:18px 16px 36px}
+      header{gap:12px}
+      .wallet{flex-direction:column; align-items:stretch}
+      .addr, .wallet .btn{width:100%; text-align:center}
+      .qr-wrap{flex-direction:column; align-items:stretch}
+      .qr-box{width:100%; display:flex; justify-content:center}
+      .share{width:100%}
+      .share .btn, .share .btn.secondary{flex:1 1 140px; min-width:0; text-align:center}
+      .goal{align-items:stretch}
+      .goal > *{width:100%}
+      .kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .float-banner{right:0; left:0; bottom:12px; padding:0 16px; animation:none; display:flex; justify-content:center}
+      .float-banner a{width:100%; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,.35)}
+    }
+
+    @media (max-width: 460px){
+      .wrap{padding:16px 14px 32px}
+      .subtitle{font-size:15px}
+      .card{padding:16px}
+      .kpi{grid-template-columns:repeat(1,minmax(0,1fr))}
+      .kpi p{font-size:20px}
+      .btn, .btn.secondary{padding:12px 14px; font-size:15px}
+      .lang{flex-wrap:wrap; gap:6px}
+      .lang button{flex:1 1 calc(50% - 6px); text-align:center}
+      .float-banner a{font-size:15px; padding:12px 14px}
+    }
   </style>
 </head>
 <body>
