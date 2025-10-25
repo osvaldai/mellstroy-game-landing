@@ -228,6 +228,7 @@
 
     const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
     const TRONGRID_API_KEY = 'b77f713f-ef50-4d28-892b-a8bb088e3782';
+    const TRONGRID_HOST = 'https://api.trongrid.io';
     const GOAL = 69000;
 
     function detectLang(){
@@ -414,18 +415,55 @@
       byId('updated').textContent = new Date().toLocaleString(LANG==='ru'?'ru-RU':LANG==='en'?'en-US':'uk-UA');
     }
 
+    async function fetchTronBalance(){
+      const resp = await fetch(`${TRONGRID_HOST}/v1/accounts/${addr}`, {
+        headers: {
+          'TRON-PRO-API-KEY': TRONGRID_API_KEY
+        }
+      });
+      if(!resp.ok){
+        throw new Error(`HTTP ${resp.status}`);
+      }
+      const data = await resp.json();
+      const entry = Array.isArray(data?.data) ? data.data[0] : null;
+      const trc20 = Array.isArray(entry?.trc20) ? entry.trc20 : [];
+      let balance = null;
+      for(const token of trc20){
+        if(token && Object.prototype.hasOwnProperty.call(token, USDT_CONTRACT)){
+          balance = token[USDT_CONTRACT];
+          break;
+        }
+        if(token?.symbol === 'USDT' && token?.contract_address === USDT_CONTRACT){
+          balance = token.balance;
+          break;
+        }
+      }
+      if(balance == null){
+        throw new Error('USDT balance not found');
+      }
+      return formatUnits(balance, 6);
+    }
+
     async function readBalance(){
       if(!/^T[a-zA-Z0-9]{25,34}$/.test(addr)){
         byId('raised').textContent = '— (add TRON address)';
         byId('progress').textContent = '—';
         return;
       }
+      try{
+        const amountStr = await fetchTronBalance();
+        await updateUI(amountStr);
+        return;
+      }catch(err){
+        console.warn('TronGrid REST balance failed, trying TronWeb', err);
+      }
+
       const ok = await loadTronWeb();
-      if(!ok){ byId('raised').textContent = '— (TronWeb недоступний)'; return; }
+      if(!ok){ byId('raised').textContent = '— (Tron API недоступний)'; return; }
       try{
         const tronWeb = new window.TronWeb({
-          fullHost: 'https://api.trongrid.io',
-          headers: { 'TRON-PRO-API-KEY': "b77f713f-ef50-4d28-892b-a8bb088e3782" }
+          fullHost: TRONGRID_HOST,
+          headers: { 'TRON-PRO-API-KEY': TRONGRID_API_KEY }
         });
         const usdt = await tronWeb.contract().at(USDT_CONTRACT);
         const [rawBal, dec] = await Promise.all([
