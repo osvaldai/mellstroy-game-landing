@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mellstroy.game — Community Push (Attention to Mellstroy)</title>
+  <title>Mell-house</title>
   <meta name="description" content="Односторінковий сайт для привернення уваги Мелстроя та до його проєкту Mellstroy.game. Прозорий збір USDT (TRC20) на $69 000 з live‑лічильником." />
   <meta property="og:title" content="Mellstroy, take a look — Community Push" />
   <meta property="og:description" content="Привертаємо увагу до Mellstroy.game: адреса TRC20, копіювання в 1 клік, live‑лічильник зібраного." />
@@ -215,6 +215,7 @@
   <script>
     const I18N = {
       uk: {
+        tab_title: 'Mell-house',
         attention_over: 'Ця сторінка — спеціально, щоб привернути увагу',
         title_pre: 'Community Push for',
         subtitle: 'Мета — привернути увагу Мелстроя та до його проєкту Mellstroy.game через прозорий збір у USDT (TRC20). Адреса гаманця, копіювання в 1 клік і лічильник зібраних коштів, що оновлюється при кожному перезавантаженні сторінки.',
@@ -232,6 +233,7 @@
         banner: "Mellstroy, let's talk",
       },
       en: {
+        tab_title: 'Mell-house',
         attention_over: 'This page exists to get your attention',
         title_pre: 'Community Push for',
         subtitle: 'Goal — get Mellstroy’s attention and to hes project Mellstroy.game via a transparent USDT (TRC20) fundraiser. Wallet address, 1‑click copy, and a live counter refreshed on each page load.',
@@ -249,6 +251,7 @@
         banner: "Mellstroy, let's talk",
       },
       ru: {
+        tab_title: 'Mell-house',
         attention_over: 'Эта страница создана, чтобы привлечь внимание',
         title_pre: 'Community Push for',
         subtitle: 'Цель — привлечь внимание Мелстроя и его проекта Mellstroy.game через прозрачный сбор в USDT (TRC20). Адрес кошелька, копирование в 1 клик и счётчик с живым прогрессом.',
@@ -283,6 +286,7 @@
     function applyLang(){
       const t = I18N[LANG];
       document.documentElement.lang = LANG;
+      document.title = t.tab_title;
       byId('t_attention_over').textContent = t.attention_over;
       byId('t_title_pre').textContent = t.title_pre;
       byId('t_subtitle').textContent = t.subtitle;
