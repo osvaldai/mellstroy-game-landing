@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mellstroy.game — Community Push (Attention to Mellstroy)</title>
+  <meta name="description" content="Односторінковий сайт для привернення уваги Мелстроя та до його проєкту Mellstroy.game. Прозорий збір USDT (TRC20) на $69 000 з live‑лічильником." />
+  <meta property="og:title" content="Mellstroy, take a look — Community Push" />
+  <meta property="og:description" content="Привертаємо увагу до Mellstroy.game: адреса TRC20, копіювання в 1 клік, live‑лічильник зібраного." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0b0b0f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b0b10; --card: #11131a; --muted: #8b90a0; --fg: #e9ecf1; --accent: #7c3aed; --accent2:#22d3ee; --ok:#22c55e; --warn:#f59e0b;
+      --ring: 0 0 0 10px rgba(124,58,237,.15);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; color:var(--fg); background:radial-gradient(1200px 800px at 10% -10%, rgba(124,58,237,.25), transparent), radial-gradient(1000px 600px at 110% 10%, rgba(34,211,238,.18), transparent), linear-gradient(180deg, #0b0b10, #0b0b10);}    
+    .wrap{max-width:980px; margin:0 auto; padding:24px}
+    header{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 0}
+    .logo{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
+    .badge{display:inline-flex; align-items:center; gap:8px; background:rgba(124,58,237,.12); color:#cbb6ff; border:1px solid rgba(124,58,237,.35); padding:6px 10px; border-radius:999px; font-size:12px;}
+    .title{font-size:clamp(32px,6vw,62px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:8px 0;}
+    .subtitle{max-width:780px; color:var(--muted); font-size:clamp(15px,2.2vw,18px)}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.07); border-radius:20px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25); backdrop-filter: saturate(140%) blur(6px)}
+
+    .wallet{display:flex; flex-wrap:wrap; align-items:center; gap:10px}
+    .addr{font:600 16px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0e1118; border:1px dashed rgba(255,255,255,.12); padding:12px 14px; border-radius:14px; word-break:break-all}
+    .btn{appearance:none; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(124,58,237,.18), rgba(124,58,237,.12)); color:#efeaff; padding:12px 16px; border-radius:14px; font-weight:700; cursor:pointer; transition:.15s transform ease, .2s box-shadow ease;}
+    .btn:hover{transform:translateY(-1px); box-shadow:var(--ring)}
+    .btn:active{transform:translateY(0)}
+    .btn.secondary{background:transparent; color:var(--fg)}
+
+    .goal{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px}
+    .goal strong{font-size:22px}
+
+    .meter{height:14px; background:#0d1220; border:1px solid rgba(255,255,255,.08); border-radius:999px; overflow:hidden; position:relative}
+    .fill{height:100%; width:0; background:linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow:0 0 30px rgba(124,58,237,.45) inset}
+
+    .kpi{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:12px}
+    .kpi .card{padding:14px}
+    .kpi h4{margin:4px 0 2px; font-size:13px; color:var(--muted)}
+    .kpi p{margin:0; font-weight:800; font-size:22px}
+
+    footer{color:#9aa0ad; font-size:13px; padding:28px 0; text-align:center}
+    a{color:#b6f0ff}
+    .hint{font-size:12px; color:var(--muted)}
+
+    .lang{display:flex; gap:8px; align-items:center}
+    .lang button{border:1px solid rgba(255,255,255,.14); background:#0f1220; color:#e8ebf5; padding:6px 10px; border-radius:999px; font-weight:700; cursor:pointer}
+    .lang button.active{background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#fff}
+
+    .share{display:flex; gap:10px; flex-wrap:wrap}
+
+    .float-banner{position:fixed; right:16px; bottom:16px; z-index:50; animation:pulse 1.8s infinite}
+    .float-banner a{display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:999px; background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#fff; text-decoration:none; font-weight:800; box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+    .qr-wrap{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+    .qr-box{background:#0e1118; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:12px}
+
+    /* Attention strip */
+    .attention{margin:8px 0 16px; border:1px dashed rgba(255,255,255,.18); border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px}
+    .attention strong{background:linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="#" aria-label="Mellstroy.game">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.1 6.3L22 9.3l-5 4.9 1.2 6.9L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2z" stroke="url(#g)" stroke-width="1.2"/><defs><linearGradient id="g" x1="0" x2="24" y1="0" y2="24"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs></svg>
+        <strong>Mellstroy.game</strong>
+      </a>
+      <div class="lang" aria-label="Language switch">
+        <button data-lang="uk" class="active" title="Українська">🇺🇦 UA</button>
+        <button data-lang="en" title="English">🇬🇧 EN</button>
+        <button data-lang="ru" title="Русский">🇷🇺 RU</button>
+      </div>
+    </header>
+
+    <div class="attention card">
+      <div>
+        <div class="hint" id="t_attention_over">Ця сторінка — спеціально, щоб привернути увагу</div>
+        <div class="title" style="font-size:clamp(22px,4.2vw,36px); margin:2px 0"><strong>Mellstroy</strong>, подивись на <a href="https://mellstroy.game" target="_blank" rel="noopener">Mellstroy.game</a></div>
+      </div>
+      <a class="btn" href="https://mellstroy.game" target="_blank" rel="noopener">mellstroy.game →</a>
+    </div>
+
+    <section class="card" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="title"><span id="t_title_pre">Community Push for</span> <span style="background:linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent;">Mellstroy.game</span></h1>
+      <p id="t_subtitle" class="subtitle">Мета — <strong>привернути увагу Мелстроя</strong> та до його проєкту Mellstroy.game через прозорий збір у USDT (TRC20). Адреса гаманця, копіювання в 1 клік і лічильник зібраних коштів, що оновлюється при кожному перезавантаженні сторінки.</p>
+      <div class="share" style="margin-top:10px">
+        <button class="btn" id="shareBtn">Поділитися</button>
+        <a class="btn secondary" id="shareX" target="_blank" rel="noopener">X / Twitter</a>
+        <a class="btn secondary" id="shareTG" target="_blank" rel="noopener">Telegram</a>
+        <a class="btn secondary" id="linkOfficial" href="https://mellstroy.game" target="_blank" rel="noopener">mellstroy.game</a>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px" aria-labelledby="wallet-title">
+      <h2 id="wallet-title" style="margin:0 0 10px">Адреса гаманця (TRC20 USDT)</h2>
+      <div class="wallet">
+        <code id="wallet" class="addr" title="Натисніть 'Копіювати' поруч">TCnp8cZ8uCBdMWtW4HQUE57tVkmgK8B1xE</code>
+        <button class="btn" id="copyBtn">Копіювати</button>
+        <a id="viewLink" class="btn secondary" target="_blank" rel="noopener" href="#">Відкрити в TRONSCAN</a>
+        <button class="btn" id="qrBtn">QR</button>
+      </div>
+      <p class="hint" id="copyHint" role="status" aria-live="polite" style="margin-top:8px"></p>
+
+      <div class="goal">
+        <strong id="t_goal_lbl">Ціль: <span id="target">$69,000</span></strong>
+        <span class="hint" id="t_hint_balance">Баланс читається напряму з контракту USDT (TRC20) у мережі TRON.</span>
+      </div>
+      <div class="meter" aria-hidden="true" style="margin-top:8px"><div class="fill" id="fill"></div></div>
+
+      <div class="kpi">
+        <div class="card"><h4 id="t_raised">Зібрано</h4><p id="raised">—</p></div>
+        <div class="card"><h4 id="t_progress">Прогрес</h4><p id="progress">—</p></div>
+        <div class="card"><h4 id="t_updated">Останнє оновлення</h4><p id="updated">—</p></div>
+        <div class="card"><h4 id="t_addr">Адреса</h4><p id="addrEcho" style="font:600 12px/1.3 ui-monospace, Menlo, Consolas">—</p></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h3 id="t_why_title" style="margin:0 0 8px">Відкрите звернення до Мелстроя</h3>
+      <p id="t_why_text" class="subtitle">Ми віримо в потенціал Mellstroy.game і хочемо, щоб ця ідея отримала максимум уваги. Цей лендінг — соціальний сигнал: 
+        <br>• кожен може закинути на хату у USDT (TRC20) або побачити реальний результат;
+        <br>• прозора мета $69k з live‑прогресом;
+        <br>• кнопки шерінгу, щоб швидко підсилити «шум» у мережі.
+      </p>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="qr-wrap">
+        <div>
+          <h3 id="t_qr_title" style="margin:0 0 6px">QR для донату</h3>
+          <p id="t_qr_text" class="hint" style="margin:0 0 10px">Скануй, щоб перевести USDT (TRC20) прямо на адресу вище.</p>
+          <div class="qr-box"><canvas id="qrCanvas" width="180" height="180" aria-label="QR"></canvas></div>
+          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn secondary" id="downloadQR">Завантажити QR</button>
+            <button class="btn secondary" id="copyAddr2">Копіювати адресу</button>
+          </div>
+        </div>
+        <div>
+          <h3 id="t_share_title" style="margin:0 0 6px">Розкажи друзям</h3>
+          <p id="t_share_text" class="hint" style="margin:0 0 10px">Чим більше людей дізнається — тим швидше зберемо $69k.</p>
+          <div class="share">
+            <button class="btn" id="shareBtn2">Поділитися</button>
+            <a class="btn secondary" id="shareX2" target="_blank" rel="noopener">X / Twitter</a>
+            <a class="btn secondary" id="shareTG2" target="_blank" rel="noopener">Telegram</a>
+            <a class="btn secondary" id="linkOfficial2" href="https://mellstroy.game" target="_blank" rel="noopener">mellstroy.game</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p id="t_footer">USDT (TRC20) читається з офіційного контракту, сума конвертується 1:1 у $. Лічильник оновлюється при перезавантаженні сторінки. Якщо API недоступне — спробуйте пізніше.</p>
+    </footer>
+  </div>
+
+  <div class="float-banner">
+    <a id="talkLink" href="https://t.me/Aleksandr_pankow" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 2L11 13" stroke="#fff" stroke-width="1.8"/><path d="M22 2l-7 20-4-9-9-4 20-7z" stroke="#fff" stroke-width="1.4" fill="none"/></svg>
+      <span id="t_banner">Mellstroy, let’s talk</span>
+    </a>
+  </div>
+
+  <script>
+    const I18N = {
+      uk: {
+        attention_over: 'Ця сторінка — спеціально, щоб привернути увагу',
+        title_pre: 'Community Push for',
+        subtitle: 'Мета — привернути увагу Мелстроя та до його проєкту Mellstroy.game через прозорий збір у USDT (TRC20). Адреса гаманця, копіювання в 1 клік і лічильник зібраних коштів, що оновлюється при кожному перезавантаженні сторінки.',
+        share: 'Поділитися', x: 'X / Twitter', tg: 'Telegram',
+        wallet_title: 'Адреса гаманця (TRC20 USDT)',
+        copy: 'Копіювати', open_scan: 'Відкрити в TRONSCAN', qr: 'QR',
+        goal_lbl: 'Ціль: ', hint_balance: 'Баланс читається напряму з контракту USDT (TRC20) у мережі TRON.',
+        raised: 'Зібрано', progress: 'Прогрес', updated: 'Останнє оновлення', addr: 'Адреса',
+        why_title: 'Відкрите звернення до Мелстроя',
+        why_text: 'Ми віримо в потенціал Mellstroy.game і хочемо, щоб ця ідея отримала максимум уваги. Цей лендінг — соціальний сигнал: реальний збір у USDT (TRC20); прозора мета $69k з live‑прогресом; кнопки шерінгу, щоб швидко підсилити «шум» у мережі.',
+        qr_title: 'QR для донату', qr_text: 'Скануй, щоб перевести USDT (TRC20) прямо на адресу вище.',
+        dl_qr: 'Завантажити QR', copy_addr: 'Копіювати адресу',
+        share_title: 'Розкажи друзям', share_text: 'Чим більше людей дізнається — тим швидше зберемо $69k.',
+        footer: 'USDT (TRC20) читається з офіційного контракту (1:1 до $). Лічильник оновлюється при перезавантаженні. Якщо API недоступне — спробуйте пізніше.',
+        banner: "Mellstroy, let's talk",
+      },
+      en: {
+        attention_over: 'This page exists to get your attention',
+        title_pre: 'Community Push for',
+        subtitle: 'Goal — get Mellstroy’s attention and to hes project Mellstroy.game via a transparent USDT (TRC20) fundraiser. Wallet address, 1‑click copy, and a live counter refreshed on each page load.',
+        share: 'Share', x: 'X / Twitter', tg: 'Telegram',
+        wallet_title: 'Wallet address (TRC20 USDT)',
+        copy: 'Copy', open_scan: 'Open in TRONSCAN', qr: 'QR',
+        goal_lbl: 'Goal: ', hint_balance: 'Balance is read directly from the USDT (TRC20) contract on TRON.',
+        raised: 'Raised', progress: 'Progress', updated: 'Last update', addr: 'Address',
+        why_title: 'Open letter to Mellstroy',
+        why_text: 'We believe in the potential of Mellstroy.game and want this idea to get maximum attention. This landing is a social signal: real USDT (TRC20) fundraising; a clear $69k goal with live progress; and share buttons to amplify the buzz quickly.',
+        qr_title: 'Donation QR', qr_text: 'Scan to send USDT (TRC20) directly to the wallet above.',
+        dl_qr: 'Download QR', copy_addr: 'Copy address',
+        share_title: 'Spread the word', share_text: 'The more people know, the faster we hit $69k.',
+        footer: 'USDT (TRC20) is read from the official contract (1:1 to $). Counter updates on reload. If the API is down — try again later.',
+        banner: "Mellstroy, let's talk",
+      },
+      ru: {
+        attention_over: 'Эта страница создана, чтобы привлечь внимание',
+        title_pre: 'Community Push for',
+        subtitle: 'Цель — привлечь внимание Мелстроя и его проекта Mellstroy.game через прозрачный сбор в USDT (TRC20). Адрес кошелька, копирование в 1 клик и счётчик с живым прогрессом.',
+        share: 'Поделиться', x: 'X / Twitter', tg: 'Telegram',
+        wallet_title: 'Адрес кошелька (TRC20 USDT)',
+        copy: 'Копировать', open_scan: 'Открыть в TRONSCAN', qr: 'QR',
+        goal_lbl: 'Цель: ', hint_balance: 'Баланс читается напрямую из контракта USDT (TRC20) в сети TRON.',
+        raised: 'Собрано', progress: 'Прогресс', updated: 'Последнее обновление', addr: 'Адрес',
+        why_title: 'Открытое обращение к Мелстрою',
+        why_text: 'Мы верим в потенциал Mellstroy.game и хотим, чтобы идея получила максимум внимания. Этот лендинг — социальный сигнал: реальный сбор USDT (TRC20); прозрачная цель $69k с live‑прогрессом; кнопки шеринга для усиления охвата.',
+        qr_title: 'QR для доната', qr_text: 'Сканируй, чтобы отправить USDT (TRC20) на адрес выше.',
+        dl_qr: 'Скачать QR', copy_addr: 'Копировать адрес',
+        share_title: 'Расскажи друзьям', share_text: 'Чем больше людей узнает — тем быстрее соберём $69k.',
+        footer: 'USDT (TRC20) читается из официального контракта (1:1 к $). Счётчик обновляется при перезагрузке. Если API недоступно — попробуйте позже.',
+        banner: "Mellstroy, let's talk",
+      }
+    };
+
+    const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+    const GOAL = 69000;
+
+    function detectLang(){
+      const l = (navigator.language || 'uk').slice(0,2);
+      if(l==='uk') return 'uk'; if(l==='ru') return 'ru'; return 'en';
+    }
+    let LANG = detectLang();
+    function byId(id){ return document.getElementById(id); }
+
+    function applyLang(){
+      const t = I18N[LANG];
+      document.documentElement.lang = LANG;
+      byId('t_attention_over').textContent = t.attention_over;
+      byId('t_title_pre').textContent = t.title_pre;
+      byId('t_subtitle').textContent = t.subtitle;
+      byId('shareBtn').textContent = t.share; byId('shareBtn2').textContent = t.share;
+      byId('shareX').textContent = t.x; byId('shareX2').textContent = t.x;
+      byId('shareTG').textContent = t.tg; byId('shareTG2').textContent = t.tg;
+      byId('wallet-title').textContent = t.wallet_title;
+      byId('copyBtn').textContent = t.copy; byId('qrBtn').textContent = t.qr;
+      byId('viewLink').textContent = t.open_scan;
+      byId('t_goal_lbl').firstChild.textContent = t.goal_lbl;
+      byId('t_hint_balance').textContent = t.hint_balance;
+      byId('t_raised').textContent = t.raised; byId('t_progress').textContent = t.progress; byId('t_updated').textContent = t.updated; byId('t_addr').textContent = t.addr;
+      byId('t_why_title').textContent = t.why_title; byId('t_why_text').textContent = t.why_text;
+      byId('t_qr_title').textContent = t.qr_title; byId('t_qr_text').textContent = t.qr_text;
+      byId('downloadQR').textContent = t.dl_qr; byId('copyAddr2').textContent = t.copy_addr;
+      byId('t_share_title').textContent = t.share_title; byId('t_share_text').textContent = t.share_text;
+      byId('t_footer').textContent = t.footer;
+      byId('t_banner').textContent = t.banner;
+      setShareLinks();
+    }
+
+    const addr = 'TCnp8cZ8uCBdMWtW4HQUE57tVkmgK8B1xE';
+    byId('addrEcho').textContent = addr;
+    const viewLink = byId('viewLink');
+    if(/^T[a-zA-Z0-9]{25,34}$/.test(addr)){
+      viewLink.href = `https://tronscan.org/#/address/${encodeURIComponent(addr)}`;
+    }
+
+    async function copyAddr(){
+      try{ await navigator.clipboard.writeText(addr);
+        byId('copyHint').textContent = (LANG==='uk'? 'Адресу скопійовано!' : LANG==='ru'? 'Адрес скопирован!' : 'Address copied!');
+        setTimeout(()=> byId('copyHint').textContent = '', 2200);
+      }catch(e){ byId('copyHint').textContent = (LANG==='uk'? 'Не вдалося скопіювати :(' : LANG==='ru'? 'Не удалось скопировать :(' : 'Copy failed :('); }
+    }
+    byId('copyBtn').addEventListener('click', copyAddr);
+    byId('copyAddr2').addEventListener('click', copyAddr);
+
+    document.querySelectorAll('.lang button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.lang button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        LANG = btn.dataset.lang; applyLang();
+      });
+    });
+    document.querySelector(`.lang button[data-lang="${LANG}"]`)?.classList.add('active');
+
+    function setShareLinks(){
+      const url = encodeURIComponent(location.href);
+      const txt = encodeURIComponent(I18N[LANG].subtitle + ' → mellstroy.game');
+      byId('shareX').href = `https://twitter.com/intent/tweet?text=${txt}&url=${url}`;
+      byId('shareX2').href = byId('shareX').href;
+      byId('shareTG').href = `https://t.me/share/url?url=${url}&text=${txt}`;
+      byId('shareTG2').href = byId('shareTG').href;
+    }
+    async function doShare(){
+      const title = 'Mellstroy.game — Community Push';
+      const text = I18N[LANG].subtitle;
+      const url = location.href;
+      if(navigator.share){ try{ await navigator.share({title, text, url}); }catch(e){} }
+      else { window.open(document.getElementById('shareX').href, '_blank'); }
+    }
+    byId('shareBtn').addEventListener('click', doShare);
+    byId('shareBtn2').addEventListener('click', doShare);
+
+    (async function(){
+      try{
+        await new Promise((resolve, reject)=>{
+          const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js'; s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
+        });
+        if(window.QRCode){
+          const canvas = byId('qrCanvas');
+          window.QRCode.toCanvas(canvas, addr, {width:180, margin:1}, function (error) { if (error) console.error(error); });
+          byId('downloadQR').addEventListener('click', ()=>{
+            const link = document.createElement('a'); link.download = 'mellstroy_wallet_qr.png'; link.href = canvas.toDataURL(); link.click();
+          });
+        }
+      }catch(e){ console.warn('QR lib failed'); }
+    })();
+
+    async function loadTronWeb(){
+      const urls = [
+        'https://cdn.jsdelivr.net/npm/tronweb@5/dist/tronweb.js',
+        'https://unpkg.com/tronweb/dist/TronWeb.js'
+      ];
+      for(const src of urls){
+        try{
+          await new Promise((resolve, reject)=>{
+            const s = document.createElement('script');
+            s.src = src; s.async = true; s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+          });
+          if(window.TronWeb) return true;
+        }catch(err){}
+      }
+      return false;
+    }
+
+    const fmt = new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 2 });
+    function formatUnits(bigint, decimals){
+      const s = BigInt(bigint).toString();
+      if(decimals === 0) return s;
+      const pad = s.padStart(decimals + 1, '0');
+      const i = pad.slice(0, -decimals);
+      const f = pad.slice(-decimals).replace(/0+$/,'');
+      return f ? `${i}.${f}` : i;
+    }
+
+    async function updateUI(amountStr){
+      const amount = parseFloat(amountStr);
+      const pct = Math.max(0, Math.min(100, (amount / GOAL) * 100));
+      byId('raised').textContent = `$${fmt.format(amount)}`;
+      byId('progress').textContent = `${fmt.format(pct)}%`;
+      byId('fill').style.width = pct + '%';
+      byId('updated').textContent = new Date().toLocaleString(LANG==='ru'?'ru-RU':LANG==='en'?'en-US':'uk-UA');
+    }
+
+    async function readBalance(){
+      if(!/^T[a-zA-Z0-9]{25,34}$/.test(addr)){
+        byId('raised').textContent = '— (add TRON address)';
+        byId('progress').textContent = '—';
+        return;
+      }
+      const ok = await loadTronWeb();
+      if(!ok){ byId('raised').textContent = '— (TronWeb недоступний)'; return; }
+      try{
+        const tronWeb = new window.TronWeb({ fullHost: 'https://api.trongrid.io' });
+        const usdt = await tronWeb.contract().at(USDT_CONTRACT);
+        const [rawBal, dec] = await Promise.all([
+          usdt.balanceOf(addr).call(),
+          usdt.decimals().call()
+        ]);
+        const decimals = parseInt((dec && dec.toString) ? dec.toString() : dec, 10) || 6;
+        const raw = (rawBal && rawBal.toString) ? rawBal.toString() : String(rawBal);
+        const amountStr = formatUnits(raw, decimals);
+        await updateUI(amountStr);
+      }catch(err){ console.error('Balance error', err); byId('raised').textContent = '— (помилка читання)'; }
+    }
+
+    byId('qrBtn').addEventListener('click', ()=>{ window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); });
+
+    // Insert attention-over text id
+    const attOver = document.querySelector('.attention .hint'); attOver.id = 't_attention_over';
+
+    applyLang();
+    setShareLinks();
+    readBalance();
+  </script>
+</body>
+</html>
