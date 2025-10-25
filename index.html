@@ -425,7 +425,7 @@
       try{
         const tronWeb = new window.TronWeb({
           fullHost: 'https://api.trongrid.io',
-          headers: { 'TRON-PRO-API-KEY': TRONGRID_API_KEY }
+          headers: { 'TRON-PRO-API-KEY': b77f713f-ef50-4d28-892b-a8bb088e3782 }
         });
         const usdt = await tronWeb.contract().at(USDT_CONTRACT);
         const [rawBal, dec] = await Promise.all([
