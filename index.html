@@ -416,32 +416,70 @@
     }
 
     async function fetchTronBalance(){
-      const resp = await fetch(`${TRONGRID_HOST}/v1/accounts/${addr}`, {
-        headers: {
-          'TRON-PRO-API-KEY': TRONGRID_API_KEY
+      const headers = {
+        'TRON-PRO-API-KEY': TRONGRID_API_KEY,
+        'Accept': 'application/json'
+      };
+      let lastErr = null;
+
+      const attemptParsers = [
+        {
+          url: `${TRONGRID_HOST}/v1/contracts/${USDT_CONTRACT}/accounts/${addr}`,
+          parse(json){
+            const entry = Array.isArray(json?.data) ? json.data[0] : null;
+            if(!entry){
+              throw new Error('No contract data');
+            }
+            const raw = entry.balance ?? entry.amount ?? entry.value;
+            if(raw == null){
+              throw new Error('Contract balance missing');
+            }
+            const decimals = Number.parseInt(entry.decimals, 10);
+            return formatUnits(raw, Number.isFinite(decimals) ? decimals : 6);
+          }
+        },
+        {
+          url: `${TRONGRID_HOST}/v1/accounts/${addr}`,
+          parse(json){
+            const entry = Array.isArray(json?.data) ? json.data[0] : null;
+            const trc20 = Array.isArray(entry?.trc20) ? entry.trc20 : [];
+            for(const token of trc20){
+              if(!token) continue;
+              let raw = null;
+              if(Object.prototype.hasOwnProperty.call(token, USDT_CONTRACT)){
+                raw = token[USDT_CONTRACT];
+              }else if(token?.contract_address === USDT_CONTRACT || token?.tokenId === USDT_CONTRACT){
+                raw = token.balance ?? token.value ?? token.amount ?? null;
+              }
+              if(raw != null){
+                const decimals = Number.parseInt(token.decimals, 10);
+                return formatUnits(raw, Number.isFinite(decimals) ? decimals : 6);
+              }
+            }
+            throw new Error('USDT balance not found in account data');
+          }
         }
-      });
-      if(!resp.ok){
-        throw new Error(`HTTP ${resp.status}`);
-      }
-      const data = await resp.json();
-      const entry = Array.isArray(data?.data) ? data.data[0] : null;
-      const trc20 = Array.isArray(entry?.trc20) ? entry.trc20 : [];
-      let balance = null;
-      for(const token of trc20){
-        if(token && Object.prototype.hasOwnProperty.call(token, USDT_CONTRACT)){
-          balance = token[USDT_CONTRACT];
-          break;
+      ];
+
+      for(const {url, parse} of attemptParsers){
+        try{
+          const resp = await fetch(url, { headers, mode: 'cors' });
+          if(!resp.ok){
+            throw new Error(`HTTP ${resp.status}`);
+          }
+          const json = await resp.json();
+          const amount = parse(json);
+          if(amount == null){
+            throw new Error('Empty amount response');
+          }
+          return amount;
+        }catch(err){
+          lastErr = err;
+          console.warn('TronGrid REST read failed', url, err);
         }
-        if(token?.symbol === 'USDT' && token?.contract_address === USDT_CONTRACT){
-          balance = token.balance;
-          break;
-        }
       }
-      if(balance == null){
-        throw new Error('USDT balance not found');
-      }
-      return formatUnits(balance, 6);
+
+      throw lastErr || new Error('Balance unavailable');
     }
 
     async function readBalance(){
